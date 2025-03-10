@@ -1,59 +1,35 @@
-import { DataTypes, Sequelize, Model, Optional } from 'sequelize';
-import bcrypt from 'bcrypt';
+import { DataTypes, Model } from 'sequelize';
+import { sequelize } from '../config/db'; // Ensure this path is correct
 
-interface UserAttributes {
-  id: number;
-  username: string;
-  password: string;
-}
-
-interface UserCreationAttributes extends Optional<UserAttributes, 'id'> {}
-
-export class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
+class User extends Model {
   public id!: number;
   public username!: string;
   public password!: string;
-
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
-
-  // Hash the password before saving the user
-  public async setPassword(password: string) {
-    const saltRounds = 10;
-    this.password = await bcrypt.hash(password, saltRounds);
-  }
 }
 
-export function UserFactory(sequelize: Sequelize): typeof User {
-  User.init(
-    {
-      id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
-        primaryKey: true,
-      },
-      username: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      password: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
+User.init(
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
     },
-    {
-      tableName: 'users',
-      sequelize,
-      hooks: {
-        beforeCreate: async (user: User) => {
-          await user.setPassword(user.password);
-        },
-        beforeUpdate: async (user: User) => {
-          await user.setPassword(user.password);
-        },
-      }
-    }
-  );
+    username: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+  },
+  {
+    sequelize, // Ensure this is correctly imported from your `db.ts`
+    modelName: 'User',
+    tableName: 'users',
+    timestamps: false,
+  }
+);
 
-  return User;
-}
+export default User;

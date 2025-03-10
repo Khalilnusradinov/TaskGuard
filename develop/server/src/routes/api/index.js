@@ -1,0 +1,10 @@
+import express from 'express';
+import authRoutes from './auth-routes';
+import ticketRoutes from './ticketAPI';
+import userRoutes from './api/userAPI';
+import { authenticateToken } from '../middleware/auth';
+const router = express.Router();
+router.use('/auth', authRoutes);
+router.use('/api/tickets', authenticateToken, ticketRoutes);
+router.use('/api/users', authenticateToken, userRoutes);
+export default router;

@@ -1,5 +1,5 @@
 import { DataTypes, Sequelize, Model, Optional } from 'sequelize';
-import { User } from './user';
+import User from './user'; // Import as default export
 
 interface TicketAttributes {
   id: number;
@@ -42,8 +42,8 @@ export function TicketFactory(sequelize: Sequelize): typeof Ticket {
         allowNull: false,
       },
       description: {
-        type: DataTypes.STRING,
-        allowNull: false,
+        type: DataTypes.TEXT,
+        allowNull: true,
       },
       assignedUserId: {
         type: DataTypes.INTEGER,
@@ -51,8 +51,10 @@ export function TicketFactory(sequelize: Sequelize): typeof Ticket {
       },
     },
     {
-      tableName: 'tickets',
       sequelize,
+      modelName: 'Ticket',
+      tableName: 'tickets',
+      timestamps: true,
     }
   );
 
